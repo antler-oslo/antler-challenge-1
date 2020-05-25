@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <!-- 
-This page should find most recently sold properties in the are that the user searches for 
-At present it can only find properties in the area, it cannot find prices
+The purpose of the page is to find the five most recently sold properties in the area that the user searches for 
+At present it can only find properties in the area, it cannot find prices.
+
+I could not find a straightforward API to provide me with price data for the properties. 
+According to kartverket.no, one would need to sign a contract with them to get full information
+on properties. There are some services like ambita.com that you can pay to get access to it but 
+I belive that is outside of the scope of the task. If I had such an API, or a dump of what's 
+called "grunnbok" data it would be possible to query that using addresses from kartverket. 
 
 Since this is a one day challenge it is built quickly with various examples found online, listed below:
 - https://www.w3schools.com/howto/howto_css_search_button.asp 
 - https://ws.geonorge.no/adresser/v1/#/default/get_sok
+- Lots w3schools for CSS tips
 -->
 
 <html>
@@ -62,21 +69,26 @@ form.search::after {
   width: 800px;
 }
 
+.apartment-style {
+  color: #2F4F4F;
+}
+
+body {
+  background-color: lightblue;
+}
+
 </style>
 
 <script type="text/JavaScript">
 
 	function fetchAddresses () {
-
 		var locationQuery = document.getElementById("search2").value
-		console.log(locationQuery)
-
 		const Http = new XMLHttpRequest();
-		const url='https://ws.geonorge.no/adresser/v1/sok?sok='+locationQuery+'&treffPerSide=100&side=0&asciiKompatibel=true';
-
+		const url='https://ws.geonorge.no/adresser/v1/sok?sok='+locationQuery+'&treffPerSide=50&side=0&asciiKompatibel=true';
 
 		Http.onreadystatechange = function() {
-		    if (this.readyState == 4 && this.status == 200) {
+			// Checks for succesful requests
+		    if (this.readyState == 4 && this.status == 200) { 
    				extractIds(Http.responseText)
 		    }
 		};
@@ -90,22 +102,22 @@ form.search::after {
 		console.log(obj)
 		const adr = obj.adresser
 
-		var records = []
 		var results = document.getElementById("results");
-		results.innerHTML = ""
+		results.innerHTML = "" // Reset the data in the result field for each search
+
 		for (var i = 0; i < adr.length; i++) {
-			prop = adr[i]
-			createListing(prop, results)
+			createListing(adr[i], results)
 		}
 	}
 
-	// There must be simpler ways of doing this
+	// Creates the HTML and CSS for each propery that's to be displayed
 	function createListing(record, onItem) {
 	    var div = document.createElement("div");
 	    div.innerHTML = record.adressetekst.bold();
 	    if (record.bruksenhetsnummer.length > 0) {
 	    	var units = document.createElement("div")
-	    	units.innerHTML = "Apartments: " + record.bruksenhetsnummer
+	    	units.className = "apartment-style"
+	    	units.innerHTML = "Apartments: ".bold() + record.bruksenhetsnummer
 	    	div.appendChild(units)
 	    }
 	    onItem.appendChild(div);
@@ -115,16 +127,13 @@ form.search::after {
 </head>
 <body>
 
- <div class="flex-container">
-
-	<h2>Properties in your area</h2>
-	<form class="search" style="max-width:300px">
+<div class="flex-container">
+	<h2>Search for properties in your area</h2>
+	<form class="search" style="max-width:400px">
 	  <input type="text" placeholder="Search.." id="search2">
 	  <button type="button" onclick="fetchAddresses()"><i class="fa fa-search"></i></button>
 	</form>
-
 	<div id="results"> </div>
-
 </div> 
 
 </body>
