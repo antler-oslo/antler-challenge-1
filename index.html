@@ -4,12 +4,14 @@ This page should find most recently sold properties in the are that the user sea
 
 Since this is a one day challenge it is built quickly with various examples found online, listed below:
 - https://www.w3schools.com/howto/howto_css_search_button.asp 
-
+- https://ws.geonorge.no/adresser/v1/#/default/get_sok
 -->
 
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
 body {
@@ -51,14 +53,34 @@ form.search::after {
   display: table;
 }
 </style>
+<script type="text/JavaScript">
+
+	function fetchAddresses () {
+
+		var locationQuery = document.getElementById("search2").value
+		console.log(locationQuery)
+
+		const Http = new XMLHttpRequest();
+		const url='https://ws.geonorge.no/adresser/v1/sok?sok='+locationQuery+'&treffPerSide=100&side=0&asciiKompatibel=true';
+		Http.open("GET", url);
+		Http.send();
+
+		Http.onreadystatechange = (e) => {
+			document.getElementById("results").innerHTML = Http.responseText;
+		}
+	}
+</script>
 </head>
 <body>
 
 <h2>Recently sold properties in your area</h2>
-<form class="search" action="/action_page.php" style="max-width:300px">
-  <input type="text" placeholder="Search.." name="search2">
-  <button type="submit"><i class="fa fa-search"></i></button>
+<form class="search" style="max-width:300px">
+  <input type="text" placeholder="Search.." id="search2">
+  <button type="button" onclick="fetchAddresses()"><i class="fa fa-search"></i></button>
 </form>
 
+<p id="results">Results goes here</p>
+
 </body>
-</html> 
+</html>
+
