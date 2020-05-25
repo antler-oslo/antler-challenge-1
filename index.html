@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- 
 This page should find most recently sold properties in the are that the user searches for 
+At present it can only find properties in the area, it cannot find prices
 
 Since this is a one day challenge it is built quickly with various examples found online, listed below:
 - https://www.w3schools.com/howto/howto_css_search_button.asp 
@@ -53,6 +54,7 @@ form.search::after {
   display: table;
 }
 </style>
+
 <script type="text/JavaScript">
 
 	function fetchAddresses () {
@@ -62,24 +64,55 @@ form.search::after {
 
 		const Http = new XMLHttpRequest();
 		const url='https://ws.geonorge.no/adresser/v1/sok?sok='+locationQuery+'&treffPerSide=100&side=0&asciiKompatibel=true';
+
+
+		Http.onreadystatechange = function() {
+		    if (this.readyState == 4 && this.status == 200) {
+   				extractIds(Http.responseText)
+		    }
+		};
+
 		Http.open("GET", url);
 		Http.send();
+	}
 
-		Http.onreadystatechange = (e) => {
-			document.getElementById("results").innerHTML = Http.responseText;
+	function extractIds(str){
+		const obj = JSON.parse(str);
+		console.log(obj)
+		const adr = obj.adresser
+
+		var records = []
+		var results = document.getElementById("results");
+		results.innerHTML = ""
+		for (var i = 0; i < adr.length; i++) {
+			prop = adr[i]
+			createListing(prop, results)
 		}
 	}
+
+	// There must be simpler ways of doing this
+	function createListing(record, onItem) {
+	    var div = document.createElement("div");
+	    div.innerHTML = record.adressetekst.bold();
+	    if (record.bruksenhetsnummer.length > 0) {
+	    	var units = document.createElement("div")
+	    	units.innerHTML = "Apartments: " + record.bruksenhetsnummer
+	    	div.appendChild(units)
+	    }
+	    onItem.appendChild(div);
+	}
+
 </script>
 </head>
 <body>
 
-<h2>Recently sold properties in your area</h2>
+<h2>Properties in your area</h2>
 <form class="search" style="max-width:300px">
   <input type="text" placeholder="Search.." id="search2">
   <button type="button" onclick="fetchAddresses()"><i class="fa fa-search"></i></button>
 </form>
 
-<p id="results">Results goes here</p>
+<div id="results"> </div>
 
 </body>
 </html>
