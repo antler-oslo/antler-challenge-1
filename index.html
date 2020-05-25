@@ -53,6 +53,15 @@ form.search::after {
   clear: both;
   display: table;
 }
+
+.flex-container {
+  display: flex;
+  flex-direction: column;	
+  margin: auto;
+  word-break: break-all;
+  width: 800px;
+}
+
 </style>
 
 <script type="text/JavaScript">
@@ -106,13 +115,17 @@ form.search::after {
 </head>
 <body>
 
-<h2>Properties in your area</h2>
-<form class="search" style="max-width:300px">
-  <input type="text" placeholder="Search.." id="search2">
-  <button type="button" onclick="fetchAddresses()"><i class="fa fa-search"></i></button>
-</form>
+ <div class="flex-container">
 
-<div id="results"> </div>
+	<h2>Properties in your area</h2>
+	<form class="search" style="max-width:300px">
+	  <input type="text" placeholder="Search.." id="search2">
+	  <button type="button" onclick="fetchAddresses()"><i class="fa fa-search"></i></button>
+	</form>
+
+	<div id="results"> </div>
+
+</div> 
 
 </body>
 </html>
